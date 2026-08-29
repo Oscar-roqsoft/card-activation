@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html {
+    scroll-behavior: smooth;
+  }
+  
+
+
+.text-gray-color{
+ color: #4D4D4D;
+}
+
+.text-blue-color{
+ color: #1388FC;
+}
+
+.text-dark-color{
+ color: #101928;
+}
+
+.heading-gray-color{
+  color: #333;  
+}
+
+.button-text{
+    color: #101928;
+    text-align: center;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400 !important;
+    line-height: 145%; /* 23.2px */
+}
+
+.p-h-text{
+    color: #333;
+    text-align: center;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+}
+.p-text{
+    color: #333;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+}
+
+.p-text-gray{
+    color: #4D4D4D;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+}
+
+.small-header{
+    color: #333;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.big-header{
+    font-family: Inter;
+    
+    font-size: 64px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
