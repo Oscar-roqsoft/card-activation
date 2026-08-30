@@ -9,33 +9,13 @@
           <!-- Logo -->
           <NuxtLink
             to="/"
-            class="flex items-center gap-2.5"
+            class="flex items-center "
           >
-            <div
-              class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                class="h-5 w-5 text-white"
-              >
-                <path
-                  d="M3 8.5C3 7.67 3.67 7 4.5 7h15c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5h-15C3.67 17 3 16.33 3 15.5v-7Z"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                />
-                <path
-                  d="M3 10h18M7 14h3"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </div>
-  
-            <span class="text-sm font-bold text-gray-900">
-              CardSecure
-            </span>
+          <div
+          class="flex w-[150px]  items-center justify-center rounded-xl"
+        >
+          <img src="/card-logo.png" alt="">
+        </div>
           </NuxtLink>
   
           <!-- Links -->

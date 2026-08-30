@@ -1,43 +1,11 @@
 
-// import { defineStore } from 'pinia'
+import { defineStore, acceptHMRUpdate } from 'pinia'
 
-// import { createPinia } from 'pinia'
-// import  piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-
-
-
-
-
-// export const useStore = defineStore('BelugarStore', () => {
-//     const state = {
-//       selectedNavMenu:'home',
-//       pricingPlans:[],
-
-
-//     }
-
-//     const setpricingPlans = (payload)=>{
-//       state.pricingPlans = payload
-//     }
-
-//     return { state,setpricingPlans }
-//   }, 
-//   {persist: {
-//     storage: piniaPluginPersistedstate.localStorage,
-//   }},
-// )
-
-
-// if (import.meta.hot) {
-//   import.meta.hot.accept(acceptHMRUpdate(useStore, import.meta.hot))
-// }
-
-
-import { defineStore } from 'pinia'
-
-export const useStore = defineStore('Agency', () => {
+export const useStore = defineStore('card', () => {
 
   const state = reactive({
+    user:null,
+    isAuthenticated:false,
     projects:[],
     testimonial:[],
     current_page:'home',
@@ -47,8 +15,8 @@ export const useStore = defineStore('Agency', () => {
     isloadingPriceCard:false
   });
 
-    const setProjects = (payload)=>{
-        state.projects = payload
+    const setUser = (payload)=>{
+        state.user = payload
     }
     const setTestimonial = (payload)=>{
         state.testimonial = payload
@@ -67,15 +35,23 @@ export const useStore = defineStore('Agency', () => {
  
 
   const clearUser =()=>{
-    state.pricingPlans = []
-    state.isloadingPriceCard = false
+    navigateTo('/account')
+    state.user = null
+    state.isAuthenticated = false
+
+  }
+  const logout =()=>{
+    navigateTo('/account')
+    state.user = null
+    state.isAuthenticated = false
 
   }
 
   return {
-    setpricingPlans,
+    setUser,
     state,
-    clearUser
+    clearUser,
+    logout
     
   }
 

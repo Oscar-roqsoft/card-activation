@@ -4,13 +4,13 @@
         <!-- Card container -->
         <div class="bg-white rounded-3xl shadow-2xl p-8 sm:p-10 transition-all duration-300">
           <!-- Logo / Brand -->
-          <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/25 mb-4">
-              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
+          <div class="text-center mb-4">
+            <div class="inline-flex items-center justify-center ">
+              <div
+              class="flex w-[180px]  items-center justify-center rounded-xl"
+            >
+              <img src="/card-logo.png" alt="">
+            </div>
             </div>
             <h1 class="text-2xl font-bold text-gray-900">Welcome back</h1>
             <p class="text-sm text-gray-500 mt-1">Sign in to your account or create a new one</p>
@@ -108,7 +108,9 @@
                 />
                 Remember me
               </label>
-              <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Forgot password?</a>
+              <button type="button" @click="openForgotPassword" class="text-blue-600 hover:text-blue-700 font-medium">
+                Forgot password?
+              </button>
             </div>
   
             <!-- General error -->
@@ -125,10 +127,7 @@
               :disabled="loginLoading"
               class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <svg v-if="loginLoading" class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" class="opacity-25"/>
-                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
+              <LoadingSpinner v-if="loginLoading" size="sm" color="white" />
               <span>{{ loginLoading ? 'Signing in...' : 'Sign In' }}</span>
             </button>
   
@@ -262,6 +261,29 @@
               </p>
             </div>
   
+            <!-- Country -->
+            <!-- <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Country</label>
+              <input
+                v-model="signUpForm.country"
+                type="text"
+                @blur="validateSignupField('country')"
+                @input="clearSignupError('country')"
+                class="w-full px-4 py-3 rounded-xl border transition outline-none"
+                :class="[
+                  signUpErrors.country ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/10' : 'border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10'
+                ]"
+                placeholder="United States"
+              />
+              <p v-if="signUpErrors.country" class="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor"/>
+                  <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-linecap="round"/>
+                </svg>
+                {{ signUpErrors.country }}
+              </p>
+            </div> -->
+  
             <!-- Terms -->
             <div class="flex items-start gap-2 text-sm">
               <input
@@ -299,10 +321,7 @@
               :disabled="signUpLoading"
               class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <svg v-if="signUpLoading" class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" class="opacity-25"/>
-                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
+              <LoadingSpinner v-if="signUpLoading" size="sm" color="white" />
               <span>{{ signUpLoading ? 'Creating account...' : 'Create Account' }}</span>
             </button>
   
@@ -315,17 +334,17 @@
           </form>
   
           <!-- Divider -->
-          <div class="relative my-6">
+          <!-- <div class="relative my-6">
             <div class="absolute inset-0 flex items-center">
               <div class="w-full border-t border-gray-200"></div>
             </div>
             <div class="relative flex justify-center text-xs">
               <span class="px-3 bg-white text-gray-400">Or continue with</span>
             </div>
-          </div>
+          </div> -->
   
           <!-- Social buttons -->
-          <div class="grid grid-cols-2 gap-3">
+          <!-- <div class="grid grid-cols-2 gap-3">
             <button class="flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition text-sm font-medium text-gray-700">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972a6.033 6.033 0 110-12.064c1.498 0 2.866.549 3.921 1.453l2.814-2.814A9.969 9.969 0 0012.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z"/>
@@ -338,14 +357,74 @@
               </svg>
               GitHub
             </button>
+          </div> -->
+        </div>
+      </div>
+  
+      <!-- Forgot Password Modal -->
+      <div v-if="showForgotPassword" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl">
+          <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 mb-4">
+              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3L5 6v5c0 4.6 2.9 8.7 7 10 4.1-1.3 7-5.4 7-10V6l-7-3z" stroke="currentColor" stroke-linejoin="round"/>
+                <path d="M9 12h.01M12 12h.01M15 12h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">Reset Password</h3>
+            <p class="text-sm text-gray-500 mt-1">Enter your email and we'll send you a reset link</p>
           </div>
+  
+          <form @submit.prevent="handleForgotPassword" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
+              <input
+                v-model="forgotPasswordForm.email"
+                type="email"
+                required
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition outline-none"
+                placeholder="you@example.com"
+              />
+            </div>
+            <p v-if="forgotPasswordError" class="text-xs text-red-600 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" stroke="currentColor"/>
+                <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-linecap="round"/>
+              </svg>
+              {{ forgotPasswordError }}
+            </p>
+            <div class="flex gap-3">
+              <button
+                type="button"
+                @click="closeForgotPassword"
+                class="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="forgotPasswordLoading"
+                class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                <LoadingSpinner v-if="forgotPasswordLoading" size="sm" color="white" />
+                <span>{{ forgotPasswordLoading ? 'Sending...' : 'Send Link' }}</span>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue'
+ 
+  import { toast } from 'vue-sonner'
+  
+  // Import API functions
+  import { signIn, signUp, forgotPassword as forgotPasswordAPI, resendOTP } from '@/composables/requests/auth'
+  
+  const router = useRouter()
+  const pinia = useStore()
   
   // Toggle between login and signup
   const showLogin = ref(true)
@@ -370,6 +449,7 @@
     email: '',
     password: '',
     confirmPassword: '',
+    country: '',
     agree: false
   })
   const signUpErrors = ref({
@@ -377,11 +457,20 @@
     email: '',
     password: '',
     confirmPassword: '',
+    country: '',
     agree: ''
   })
   const signUpGeneralError = ref('')
   const signUpLoading = ref(false)
   const showSignupPassword = ref(false)
+  
+  // Forgot Password
+  const showForgotPassword = ref(false)
+  const forgotPasswordForm = ref({
+    email: ''
+  })
+  const forgotPasswordLoading = ref(false)
+  const forgotPasswordError = ref('')
   
   // Password strength
   const passwordStrength = computed(() => {
@@ -484,6 +573,11 @@
         signUpErrors.value.confirmPassword = 'Passwords do not match'
       }
     }
+    // if (field === 'country') {
+    //   if (!signUpForm.value.country.trim()) {
+    //     signUpErrors.value.country = 'Country is required'
+    //   }
+    // }
   }
   
   const clearSignupError = (field) => {
@@ -504,9 +598,51 @@
     signUpGeneralError.value = ''
   }
   
+  // Forgot Password handlers
+  const openForgotPassword = () => {
+    forgotPasswordForm.value.email = loginForm.value.email || ''
+    forgotPasswordError.value = ''
+    showForgotPassword.value = true
+  }
+  
+  const closeForgotPassword = () => {
+    showForgotPassword.value = false
+    forgotPasswordForm.value.email = ''
+    forgotPasswordError.value = ''
+  }
+  
+  const handleForgotPassword = async () => {
+    if (!forgotPasswordForm.value.email) {
+      forgotPasswordError.value = 'Email is required'
+      return
+    }
+  
+    forgotPasswordLoading.value = true
+    forgotPasswordError.value = ''
+  
+    try {
+      const response = await forgotPasswordAPI({
+        email: forgotPasswordForm.value.email.trim().toLowerCase()
+      })
+  
+      if (response.success) {
+        toast.success('Password reset link sent to your email')
+        closeForgotPassword()
+      } else {
+        forgotPasswordError.value = response.error || 'Failed to send reset link'
+        toast.error(forgotPasswordError.value)
+      }
+    } catch (error) {
+      console.error('Forgot password error:', error)
+      forgotPasswordError.value = 'Network error. Please try again.'
+      toast.error(forgotPasswordError.value)
+    } finally {
+      forgotPasswordLoading.value = false
+    }
+  }
+  
   // Login handler
   const handleLogin = async () => {
-    // Validate all fields
     validateLoginField('email')
     validateLoginField('password')
   
@@ -518,12 +654,42 @@
     loginGeneralError.value = ''
   
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      console.log('Login attempt:', loginForm.value)
-      alert('✅ Login successful! (simulated)')
+      const payload = {
+        email: loginForm.value.email.trim().toLowerCase(),
+        password: loginForm.value.password
+      }
+  
+      const response = await signIn(payload)
+  
+      if (response.success) {
+        if (response.data?.user?.isVerified) {
+          // Store user data
+          if (response.data) {
+            pinia.setUser(response.data)
+          }
+  
+          // Set token expiration
+          const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
+          localStorage.setItem('tokenExpiresAt', expiresAt.toString())
+          pinia.state.isAuthenticated = true
+  
+          toast.success(response.message || 'Login successful!')
+          router.push('/')
+        } else {
+          // User not verified - redirect to verify page
+          router.push({
+            path: '/verify-otp',
+            query: { email: payload.email }
+          })
+        }
+      } else {
+        loginGeneralError.value = response.message || 'Login failed. Please try again.'
+        toast.error(loginGeneralError.value)
+      }
     } catch (error) {
-      loginGeneralError.value = 'Invalid email or password. Please try again.'
-      console.error('Login failed:', error)
+      console.error('Login error:', error)
+      loginGeneralError.value = 'Network error. Please try again.'
+      toast.error(loginGeneralError.value)
     } finally {
       loginLoading.value = false
     }
@@ -536,6 +702,7 @@
     validateSignupField('email')
     validateSignupField('password')
     validateSignupField('confirmPassword')
+    // validateSignupField('country')
   
     if (!signUpForm.value.agree) {
       signUpErrors.value.agree = 'You must agree to the Terms and Privacy Policy'
@@ -549,33 +716,64 @@
     signUpGeneralError.value = ''
   
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      console.log('Sign up attempt:', signUpForm.value)
-      alert('✅ Account created successfully! (simulated)')
-      // Switch to login
-      showLogin.value = true
-      // Clear signup form
-      signUpForm.value = {
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        agree: false
+      const payload = {
+        name: signUpForm.value.name.trim(),
+        email: signUpForm.value.email.trim().toLowerCase(),
+        password: signUpForm.value.password,
       }
-      signUpErrors.value = {
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        agree: ''
+  
+      const response = await signUp(payload)
+  
+      if (response.success) {
+        toast.success(response.message || 'Account created successfully!')
+  
+        // Store user data if returned
+        if (response.data) {
+          pinia.setUser(response.data)
+        }
+  
+        // Redirect to OTP verification
+        router.push({
+          path: '/verify-otp',
+          query: { email: payload.email }
+        })
+  
+        // Clear form
+        signUpForm.value = {
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          country: '',
+          agree: false
+        }
+        signUpErrors.value = {
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          country: '',
+          agree: ''
+        }
+      } else {
+        signUpGeneralError.value = response.error || 'Unable to create account. Please try again.'
+        toast.error(signUpGeneralError.value)
       }
     } catch (error) {
-      signUpGeneralError.value = 'Unable to create account. Please try again.'
-      console.error('Sign up failed:', error)
+      console.error('Sign up error:', error)
+      signUpGeneralError.value = 'Network error. Please try again.'
+      // toast.error(signUpGeneralError.value)
     } finally {
       signUpLoading.value = false
     }
   }
+  
+  // Check if already logged in
+  onMounted(() => {
+    if (pinia.isAuthenticated && pinia.user) {
+      router.push('/dashboard')
+    }
+  })
   </script>
   
   <style scoped>

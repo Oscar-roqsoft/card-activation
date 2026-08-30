@@ -10,21 +10,11 @@
         @click="closeMobileMenu"
       >
         <div
-          class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/20"
+          class="flex w-[150px]  items-center justify-center rounded-xl"
         >
-          <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 text-white">
-            <path
-              d="M3 8.5C3 7.67 3.67 7 4.5 7h15c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5h-15C3.67 17 3 16.33 3 15.5v-7Z"
-              stroke="currentColor"
-              stroke-width="1.8"
-            />
-            <path d="M3 10h18M7 14h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-          </svg>
+          <img src="/card-logo.png" alt="">
         </div>
-        <div class="hidden sm:block">
-          <div class="text-base font-bold tracking-tight text-gray-900">CardSecure</div>
-          <div class="text-[10px] font-medium uppercase tracking-[0.18em] text-gray-400">Card Services</div>
-        </div>
+       
       </NuxtLink>
 
       <!-- Desktop Menu -->
@@ -65,13 +55,14 @@
             <div class="p-2">
               <div class="border-b border-gray-100 pb-2">
                 <div class="px-3 py-2">
-                  <p class="text-sm font-semibold text-gray-900">Guest User</p>
-                  <p class="text-xs text-gray-500">guest@example.com</p>
+                  <p class="text-sm font-semibold text-gray-900 capitalize">{{pinia.state.isAuthenticated ? pinia.state.user.user.name  :'Guest User'}}</p>
+                  <p class="text-xs text-gray-500 capitalize">{{pinia.state.isAuthenticated ? pinia.state.user.user.email  :'guest@example.com'}}</p>
                 </div>
               </div>
               <div class="py-1">
                 <button
-                  @click="openModal('login')"
+                 v-if="!isLoggedIn"
+                  @click="navigateTo('/account')"
                   class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-blue-50 hover:text-blue-600"
                 >
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -82,7 +73,8 @@
                   Sign In
                 </button>
                 <button
-                  @click="openModal('signup')"
+                 v-if="!isLoggedIn"
+                  @click="navigateTo('/account')"
                   class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-blue-50 hover:text-blue-600"
                 >
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -150,22 +142,13 @@
       class="fixed right-0 top-0 z-[70] pt-5 flex h-full w-[88%] max-w-sm flex-col bg-white shadow-2xl md:hidden"
     >
       <!-- Drawer Header -->
-      <div class="flex h-20 items-center justify-between border-b border-gray-100 px-5">
-        <NuxtLink to="/" class="flex items-center gap-3" @click="closeMobileMenu">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
-            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 text-white">
-              <path
-                d="M3 8.5C3 7.67 3.67 7 4.5 7h15c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5h-15C3.67 17 3 16.33 3 15.5v-7Z"
-                stroke="currentColor"
-                stroke-width="1.8"
-              />
-              <path d="M3 10h18M7 14h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-            </svg>
-          </div>
-          <div>
-            <div class="font-bold text-gray-900">CardSecure</div>
-            <div class="text-[9px] uppercase tracking-[0.18em] text-gray-400">Card Services</div>
-          </div>
+      <div class="flex h-10 items-center justify-between border-b border-gray-100 px-5">
+        <NuxtLink to="/" class="flex items-center " @click="closeMobileMenu">
+          <div
+          class="flex w-[150px]  items-center justify-center rounded-xl"
+        >
+          <img src="/card-logo.png" alt="">
+        </div>
         </NuxtLink>
 
         <button
@@ -234,7 +217,7 @@
         <div class="mt-6 border-t border-gray-100 pt-6">
           <div class="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Account</div>
           <div class="space-y-2">
-            <button @click="openModal('login')" class="mobile-nav-link">
+            <button v-if="!isLoggedIn" @click="navigateTo('/account'); mobileMenuOpen = false" class="mobile-nav-link">
               <span class="mobile-icon">
                 <svg viewBox="0 0 24 24" fill="none">
                   <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="currentColor" stroke-width="1.7" />
@@ -244,7 +227,7 @@
               </span>
               <span>Sign In</span>
             </button>
-            <button @click="openModal('signup')" class="mobile-nav-link">
+            <button v-if="!isLoggedIn" @click="navigateTo('/account'); mobileMenuOpen = false" class="mobile-nav-link">
               <span class="mobile-icon">
                 <svg viewBox="0 0 24 24" fill="none">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.7" />
@@ -331,11 +314,12 @@ import { ref } from 'vue'
 // Import the login/signup component
 // import LoginSignu÷p from './LoginSignup.vue'
 
+const pinia = useStore()
 const mobileMenuOpen = ref(false)
 const showDropdown = ref(false)
 const modalOpen = ref(false)
 const modalMode = ref('login')
-const isLoggedIn = ref(false)
+const isLoggedIn = ref(pinia.state.isAuthenticated)
 
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false
@@ -365,9 +349,9 @@ const handleSignupSuccess = () => {
 }
 
 const handleLogout = () => {
-  isLoggedIn.value = false
   showDropdown.value = false
-  alert('Signed out successfully!')
+  closeMobileMenu()
+  // alert('Signed out successfully!')
 }
 </script>
 

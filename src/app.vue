@@ -9,6 +9,14 @@
         <AppNavbar />
   
         <main class="min-h-[calc(100vh-80px)] pt-20">
+          <ClientOnly>
+ 
+            <SonnerToaster
+                position="top-right"
+                rich-colors
+                close-button
+            />
+            </ClientOnly>
           <NuxtPage />
         </main>
   
