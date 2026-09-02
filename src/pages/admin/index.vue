@@ -6,7 +6,7 @@
           <div class="flex items-center justify-between">
             <!-- Logo -->
             <div class="flex items-center gap-3">
-              <NuxtLink to="/admin/dashboard" class="flex items-center gap-2">
+              <NuxtLink to="/admin" class="flex items-center gap-2">
                 <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-600/20">
                   <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor"/>
@@ -59,7 +59,7 @@
       <!-- Main Content -->
       <main class="mx-auto max-w-7xl px-5 py-8 sm:px-6 sm:py-12 lg:px-8">
         <!-- Stats Cards -->
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <!-- <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           <div class="rounded-2xl bg-white p-6 shadow-sm border border-gray-200">
             <div class="flex items-center justify-between">
               <div>
@@ -118,7 +118,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
   
         <!-- Admin Navigation Grid -->
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -177,7 +177,7 @@
   
           <!-- Manage Card Activations -->
           <NuxtLink
-            to="/admin/card-activations"
+            to="/admin/activations"
             class="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-purple-200 hover:bg-purple-50/30"
           >
             <div class="flex items-start gap-4">
@@ -316,8 +316,11 @@
   import { useStore } from '@/stores'
 //   import { useAuth } from '@/composables/useAuth'
 
+import authActivate from '@/middlewares/auth-activate'
+
 definePageMeta({
-  layout: 'custom'
+  layout: 'custom',
+  middleware: authActivate
 })
   
   const store = useStore()

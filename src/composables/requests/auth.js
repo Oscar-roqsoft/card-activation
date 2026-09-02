@@ -98,3 +98,13 @@ export const checkToken = async () => {
   
     return await asyncRequest(url, options);
   };
+
+
+  export const getAllUsers = async () => {
+    const pinia = useStore();
+    const data = await fetch(`${baseURL}/users`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${pinia.state.token}`  },
+    }).then(res => res.json());
+    return data
+  }

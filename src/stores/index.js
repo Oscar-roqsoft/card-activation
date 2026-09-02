@@ -9,6 +9,7 @@ export const useStore = defineStore('card', () => {
   const state = reactive({
     // User
     user: null,
+    allUsers: null,
     isAuthenticated: false,
     token: null,
     
@@ -52,6 +53,7 @@ export const useStore = defineStore('card', () => {
   // GETTERS (Computed)
   // ============================================
   const getUser = computed(() => state.user)
+  const getAllUsers = computed(() => state.allUsers)
   const getToken = computed(() => state.token)
   const isAuthenticated = computed(() => state.isAuthenticated)
   const isVerified = computed(() => state.user?.isVerified || false)
@@ -100,6 +102,10 @@ export const useStore = defineStore('card', () => {
       }))
     }
   }
+
+  const setAllUsers = (users) => {
+    state.allUsers = users
+  }
   
   // Update user data
   const updateUser = (payload) => {
@@ -117,6 +123,7 @@ export const useStore = defineStore('card', () => {
   // Clear user data (logout)
   const clearUser = () => {
     state.user = null
+    state.allUsers = null
     state.token = null
     state.isAuthenticated = false
     state.currentActivation = null
@@ -275,6 +282,7 @@ export const useStore = defineStore('card', () => {
   
   const resetStore = () => {
     state.user = null
+    state.allUsers = null
     state.token = null
     state.isAuthenticated = false
     state.cardPlans = []
@@ -318,6 +326,7 @@ export const useStore = defineStore('card', () => {
     
     // Getters
     getUser,
+    getAllUsers,
     getToken,
     isAuthenticated,
     isVerified,
@@ -335,6 +344,7 @@ export const useStore = defineStore('card', () => {
     
     // User Actions
     setUser,
+    setAllUsers,
     updateUser,
     clearUser,
     logout,

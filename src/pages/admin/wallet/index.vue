@@ -354,11 +354,12 @@
   import { useStore } from '@/stores'
   import { useCoinWalletActions } from '@/composables/actions'
   import { toast } from 'vue-sonner'
+  import authActivate from '@/middlewares/auth-activate'
 
-  definePageMeta({
-  layout: 'custom'
+definePageMeta({
+  layout: 'custom',
+  middleware: authActivate
 })
-  
   // Store
   const store = useStore()
   

@@ -429,8 +429,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useStore } from '@/stores'
 import { useCardPlanActions } from '@/composables/actions'
 import { toast } from 'vue-sonner'
+import authActivate from '@/middlewares/auth-activate'
+
 definePageMeta({
-  layout: 'custom'
+  layout: 'custom',
+  middleware: authActivate
 })
 
 // Store
