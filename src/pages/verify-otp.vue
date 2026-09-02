@@ -262,7 +262,11 @@
         }
   
         // Redirect to dashboard
-        router.push('/')
+        if(response.data?.user.role === 'admin'){
+            router.push('/admin')
+          }else{
+            router.push('/')
+          }
 
       } else {
         generalError.value = response.error || 'Verification failed. Please try again.'

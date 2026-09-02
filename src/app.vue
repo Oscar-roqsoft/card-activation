@@ -1,14 +1,14 @@
 <template>
+            <NuxtLayout>
+
     <div class="min-h-screen bg-gray-50">
       <AppLoader
         v-if="showLoader"
         @finished="showLoader = false"
       />
-  
+      <!-- min-h-[calc(100vh-80px)] pt-20 -->
       <template v-else>
-        <AppNavbar />
-  
-        <main class="min-h-[calc(100vh-80px)] pt-20">
+        <main class="">
           <ClientOnly>
  
             <SonnerToaster
@@ -17,12 +17,11 @@
                 close-button
             />
             </ClientOnly>
-          <NuxtPage />
-        </main>
-  
-        <AppFooter />
+              <NuxtPage />
+            </main>
       </template>
     </div>
+  </NuxtLayout>
   </template>
   
   <script setup>

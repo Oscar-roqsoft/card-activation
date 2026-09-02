@@ -20,9 +20,10 @@
       <!-- Desktop Menu -->
       <div class="hidden items-center gap-8 md:flex">
         <NuxtLink to="/" class="nav-link">Home</NuxtLink>
-        <NuxtLink to="/activate" class="nav-link">Activate Card</NuxtLink>
+        <NuxtLink @click="checkisLoggedIn()" class="nav-link cursor-pointer">Activate Card</NuxtLink>
         <NuxtLink to="/howItWorks" class="nav-link">How It Works</NuxtLink>
         <NuxtLink to="/support" class="nav-link">Support</NuxtLink>
+    
       </div>
 
       <!-- Desktop Right -->
@@ -32,7 +33,7 @@
         </NuxtLink>
 
         <!-- Account Dropdown -->
-        <div class="relative" @mouseenter="showDropdown = true" @mouseleave="showDropdown = false">
+        <div class="relative" @mouseenter="showDropdown = true" @click="showDropdown = !showDropdown">
           <button
             type="button"
             class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
@@ -54,14 +55,31 @@
           >
             <div class="p-2">
               <div class="border-b border-gray-100 pb-2">
-                <div class="px-3 py-2">
-                  <p class="text-sm font-semibold text-gray-900 capitalize">{{pinia.state.isAuthenticated ? pinia.state.user.user.name  :'Guest User'}}</p>
-                  <p class="text-xs text-gray-500 capitalize">{{pinia.state.isAuthenticated ? pinia.state.user.user.email  :'guest@example.com'}}</p>
+                <div class="flex items-center">
+                  <div class="flex w-16 h-10 items-center justify-center rounded-full bg-gray-200">
+                    <svg
+                        class="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M5 20a7 7 0 0 1 14 0" />
+                      </svg>
+                  </div>
+
+                  <div class="px-3 py-2">
+                    <p class="text-sm font-semibold text-gray-900 capitalize">{{pinia.state.isAuthenticated ? pinia.state.user?.name  :'Guest User'}}</p>
+                    <p class="text-xs text-gray-500 capitalize">{{pinia.state.isAuthenticated ? pinia.state.user?.email  :'guest@example.com'}}</p>
+                  </div>
                 </div>
               </div>
               <div class="py-1">
                 <button
-                 v-if="!isLoggedIn"
+                 v-if="!pinia.state.isAuthenticated"
                   @click="navigateTo('/account')"
                   class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-blue-50 hover:text-blue-600"
                 >
@@ -73,7 +91,7 @@
                   Sign In
                 </button>
                 <button
-                 v-if="!isLoggedIn"
+                 v-if="!pinia.state.isAuthenticated"
                   @click="navigateTo('/account')"
                   class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-blue-50 hover:text-blue-600"
                 >
@@ -88,7 +106,7 @@
               </div>
               <div class="border-t border-gray-100 pt-1">
                 <button
-                  v-if="isLoggedIn"
+                  v-if="pinia.state.isAuthenticated"
                   @click="handleLogout"
                   class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
                 >
@@ -105,7 +123,7 @@
         </div>
 
         <NuxtLink
-          to="/activate"
+          @click="checkisLoggedIn()"
           class="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 hover:shadow-blue-600/30"
         >
           Activate Card
@@ -177,7 +195,7 @@
             <span>Home</span>
           </NuxtLink>
 
-          <NuxtLink to="/activate" class="mobile-nav-link" @click="closeMobileMenu">
+          <NuxtLink @click="checkisLoggedIn();closeMobileMenu()" class="mobile-nav-link cursor-pointer" >
             <span class="mobile-icon">
               <svg viewBox="0 0 24 24" fill="none">
                 <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.7" />
@@ -217,7 +235,7 @@
         <div class="mt-6 border-t border-gray-100 pt-6">
           <div class="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Account</div>
           <div class="space-y-2">
-            <button v-if="!isLoggedIn" @click="navigateTo('/account'); mobileMenuOpen = false" class="mobile-nav-link">
+            <button v-if="!pinia.state.isAuthenticated" @click="navigateTo('/account'); mobileMenuOpen = false" class="mobile-nav-link">
               <span class="mobile-icon">
                 <svg viewBox="0 0 24 24" fill="none">
                   <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="currentColor" stroke-width="1.7" />
@@ -227,7 +245,7 @@
               </span>
               <span>Sign In</span>
             </button>
-            <button v-if="!isLoggedIn" @click="navigateTo('/account'); mobileMenuOpen = false" class="mobile-nav-link">
+            <button v-if="!pinia.state.isAuthenticated" @click="navigateTo('/account'); mobileMenuOpen = false" class="mobile-nav-link">
               <span class="mobile-icon">
                 <svg viewBox="0 0 24 24" fill="none">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.7" />
@@ -237,7 +255,7 @@
               </span>
               <span>Create Account</span>
             </button>
-            <button v-if="isLoggedIn" @click="handleLogout" class="mobile-nav-link text-red-600">
+            <button v-if="pinia.state.isAuthenticated" @click="handleLogout" class="mobile-nav-link text-red-600">
               <span class="mobile-icon">
                 <svg viewBox="0 0 24 24" fill="none">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.7" />
@@ -269,7 +287,7 @@
           </div>
 
           <!-- <NuxtLink
-            to="/activate"
+            @click="checkisLoggedIn()"
             class="flex w-full items-center justify-center rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
             @click="closeMobileMenu"
           >
@@ -319,7 +337,7 @@ const mobileMenuOpen = ref(false)
 const showDropdown = ref(false)
 const modalOpen = ref(false)
 const modalMode = ref('login')
-const isLoggedIn = ref(pinia.state.isAuthenticated)
+// const pinia.state.isAuthenticated = ref(pinia.state.isAuthenticated)
 
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false
@@ -337,13 +355,13 @@ const closeModal = () => {
 }
 
 const handleLoginSuccess = () => {
-  isLoggedIn.value = true
+  pinia.state.isAuthenticated = true
   closeModal()
   alert('✅ Login successful!')
 }
 
 const handleSignupSuccess = () => {
-  isLoggedIn.value = true
+  pinia.state.isAuthenticated = true
   closeModal()
   alert('✅ Account created successfully!')
 }
@@ -351,6 +369,7 @@ const handleSignupSuccess = () => {
 const handleLogout = () => {
   showDropdown.value = false
   closeMobileMenu()
+  pinia.clearUser()
   // alert('Signed out successfully!')
 }
 </script>

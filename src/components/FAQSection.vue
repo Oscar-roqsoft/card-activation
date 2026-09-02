@@ -1,5 +1,5 @@
 <template>
-    <section class="bg-gray-50 py-20 sm:py-24">
+    <section class="bg-gray-50 py-20 sm:py-24" id="faq">
       <div class="mx-auto max-w-3xl px-5 sm:px-6 lg:px-8">
   
         <!-- Heading -->

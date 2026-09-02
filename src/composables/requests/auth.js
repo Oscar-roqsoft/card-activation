@@ -92,7 +92,7 @@ export const checkToken = async () => {
     const options = {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${pinia.user?.token}`
+        Authorization: `Bearer ${pinia.state.token}`
       }
     };
   

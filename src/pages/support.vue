@@ -124,7 +124,7 @@
   
             <!-- How it works -->
             <NuxtLink
-              to="/how-it-works"
+              to="/howItWorks"
               class="group rounded-2xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg hover:shadow-gray-200/40"
             >
               <div
@@ -183,7 +183,7 @@
   
             <!-- Activation -->
             <NuxtLink
-              to="/activate"
+              @click="checkisLoggedIn()"
               class="group rounded-2xl border border-gray-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg hover:shadow-gray-200/40"
             >
               <div
@@ -599,7 +599,7 @@
           </p>
   
           <NuxtLink
-            to="/activate"
+            @click="checkisLoggedIn()"
             class="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-semibold text-gray-950 transition hover:bg-gray-100"
           >
             Activate My Card

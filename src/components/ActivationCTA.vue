@@ -67,7 +67,7 @@
             <div class="mt-8 shrink-0 lg:ml-12 lg:mt-0">
   
               <NuxtLink
-                to="/activate"
+                @click="checkisLoggedIn()"
                 class="group inline-flex items-center justify-center gap-3 rounded-xl bg-white px-6 py-3.5 text-sm font-semibold text-gray-950 shadow-xl transition duration-200 hover:-translate-y-0.5 hover:bg-gray-100"
               >
                 Activate My Card

@@ -216,7 +216,7 @@
         <div class="mt-14 text-center">
   
           <NuxtLink
-            to="/activate"
+            @click="checkisLoggedIn()"
             class="group inline-flex items-center gap-2 rounded-xl bg-gray-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-gray-800"
           >
             Start Card Activation

@@ -16,16 +16,115 @@
         </div>
         <div class="mt-4 max-w-2xl">
           <h1 class="text-2xl font-bold tracking-tight text-gray-950 sm:text-3xl">Activate your card</h1>
-          <p class="mt-2 text-sm leading-6 text-gray-500 sm:text-base">Complete all steps to activate your card.</p>
+          <p class="mt-2 text-sm leading-6 text-gray-500 sm:text-base">Choose your card plan and complete all steps to activate.</p>
         </div>
       </div>
     </section>
+
+    <!-- Loading Overlay -->
+    <div v-if="store.state.isLoading" class="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
+      <LoadingSpinner size="lg" color="blue" label="Loading..." />
+    </div>
 
     <!-- Main -->
     <main class="mx-auto max-w-7xl px-5 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div class="grid gap-8 lg:grid-cols-[1fr_420px] lg:items-start">
         <!-- Left Column -->
         <div>
+          <!-- Step 0: Card Plan Selection -->
+          <div v-if="currentStep === 0" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7 mb-6">
+            <div class="mb-6 flex items-center justify-between">
+              <div>
+                <p class="text-xs font-semibold text-gray-900">Choose Your Plan</p>
+                <p class="mt-0.5 text-xs text-gray-400">Select a card type</p>
+              </div>
+              <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">0%</span>
+            </div>
+            <div class="h-1.5 overflow-hidden rounded-full bg-gray-100 mb-6">
+              <div class="h-full w-0 rounded-full bg-blue-600"></div>
+            </div>
+
+            <div class="flex items-start gap-4 mb-6">
+              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                  <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor"/>
+                  <path d="M2 8h20" stroke="currentColor"/>
+                  <path d="M6 12h3" stroke="currentColor" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-lg font-semibold text-gray-900">Select your card</h2>
+                <p class="text-sm text-gray-500">Choose between our Gold or Black card plans.</p>
+              </div>
+            </div>
+
+            <!-- Loading State for Plans -->
+            <div v-if="store.state.loadingCardPrice" class="flex justify-center py-8">
+              <LoadingSpinner size="md" color="blue" label="Loading plans..." />
+            </div>
+
+            <!-- Card Plans -->
+            <div v-else class="grid gap-4 md:grid-cols-2">
+              <div
+                v-for="plan in store.getCardPlans"
+                :key="plan.id || plan._id"
+                @click="selectPlan(plan.id || plan._id)"
+                class="relative rounded-2xl border-2 p-6 cursor-pointer transition-all duration-300 hover:shadow-lg"
+                :class="[
+                  selectedPlanId === (plan.id || plan._id)
+                    ? plan.name === 'gold' 
+                      ? 'border-yellow-500 bg-yellow-50 shadow-lg shadow-yellow-500/20'
+                      : 'border-gray-900 bg-gray-900/5 shadow-lg shadow-gray-900/20'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/30'
+                ]"
+              >
+                <div class="absolute top-3 right-3">
+                  <div v-if="selectedPlanId === (plan.id || plan._id)" class="flex h-6 w-6 items-center justify-center rounded-full" :class="plan.name === 'gold' ? 'bg-yellow-500' : 'bg-gray-900'">
+                    <svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12" stroke="currentColor"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white shadow-lg" :class="plan.name === 'gold' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : 'bg-gradient-to-br from-gray-700 to-gray-900'">
+                    <span class="text-xl font-bold">{{ plan.name === 'gold' ? 'G' : 'B' }}</span>
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-bold text-gray-900">{{ plan.displayName }}</h3>
+                    <p class="text-xs text-gray-500">{{ plan.name === 'gold' ? 'Premium benefits' : 'Ultimate experience' }}</p>
+                  </div>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                  <div v-for="benefit in plan.benefits" :key="benefit" class="flex items-center gap-2 text-gray-600">
+                    <svg class="h-4 w-4" :class="plan.name === 'gold' ? 'text-yellow-500' : 'text-gray-700'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20 6 9 17 4 12" stroke="currentColor"/>
+                    </svg>
+                    <span>{{ benefit }}</span>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                  <p class="text-2xl font-bold text-gray-900">${{ plan.fee.toLocaleString() }}</p>
+                  <p class="text-xs text-gray-400">One-time activation fee</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              @click="handleContinueToCardDetails"
+              :disabled="!selectedPlanId || store.state.isLoading"
+              class="mt-6 w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <LoadingSpinner v-if="store.state.isLoading" size="sm" color="white" />
+              <span v-else>Continue with {{ selectedPlan ? selectedPlan.displayName : '...' }} Card</span>
+              <svg v-if="!store.state.isLoading" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
           <!-- Step 1: Card Details -->
           <div v-if="currentStep === 1" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7 mb-6">
             <div class="mb-6 flex items-center justify-between">
@@ -53,7 +152,7 @@
               </div>
             </div>
 
-            <form @submit.prevent="goToStep(2)" class="space-y-4">
+            <form @submit.prevent="handleInitiateActivation" class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Card Number</label>
                 <input
@@ -97,9 +196,16 @@
                   class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition outline-none"
                 />
               </div>
-              <button type="submit" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition flex items-center justify-center gap-2">
-                Continue to Payment
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <!-- Error Display -->
+              <div v-if="store.errorMessage" class="text-sm text-red-600 bg-red-50 p-3 rounded-xl border border-red-200">
+                {{ store.errorMessage }}
+              </div>
+
+              <button type="submit" :disabled="store.state.isLoading" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                <LoadingSpinner v-if="store.state.isLoading" size="sm" color="white" />
+                <span v-else>Continue to Payment</span>
+                <svg v-if="!store.state.isLoading" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
@@ -136,37 +242,86 @@
             <div class="rounded-2xl border border-blue-100 bg-blue-50 p-5 mb-7">
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <p class="text-sm font-semibold text-gray-900">Card activation fee</p>
+                  <p class="text-sm font-semibold text-gray-900">{{ selectedPlan?.displayName || 'Card' }} activation fee</p>
                   <p class="text-xs text-gray-500">One-time payment</p>
                 </div>
                 <div class="text-right">
-                  <p class="text-2xl font-bold text-gray-950">${{ activationFee.toLocaleString() }}</p>
+                  <p class="text-2xl font-bold text-gray-950">${{ selectedPlanFee.toLocaleString() }}</p>
                 </div>
               </div>
             </div>
 
+            <!-- Multi-Coin Wallet Address -->
             <div class="mb-7">
-              <div class="flex items-center gap-2 mb-2">
+              <div class="flex items-center gap-2 mb-3">
                 <svg class="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <rect x="3" y="7" width="18" height="14" rx="2" stroke="currentColor"/>
                   <path d="M8 7V5h8v2" stroke="currentColor"/>
                   <path d="M12 11v4" stroke="currentColor"/>
                   <circle cx="12" cy="13" r="1" fill="currentColor"/>
                 </svg>
-                <span class="text-sm font-medium text-gray-700">Deposit USDT to activate</span>
+                <span class="text-sm font-medium text-gray-700">Select cryptocurrency &amp; deposit</span>
               </div>
-              <div class="wallet-box">
-                <span class="wallet-address" id="walletAddress">0x1a2B3c4D5e6F7a8B9c0D1E2f3A4B5C6D7E8F9A0B</span>
-                <div class="flex gap-2">
+
+              <!-- Coin Selection -->
+              <div class="flex flex-wrap gap-2 mb-4">
+                <button
+                  v-for="coin in coinWallets"
+                  :key="coin.coin"
+                  @click="selectCoin(coin.coin)"
+                  class="flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all duration-200 text-sm font-medium"
+                  :class="[
+                    selectedCoin === coin.coin
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/20'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                  ]"
+                >
+                  <span class="text-base">{{ getCoinIcon(coin.coin) }}</span>
+                  <span>{{ coin.coin }}</span>
+                  <span class="text-xs text-gray-400">{{ coin.network }}</span>
+                </button>
+              </div>
+
+              <!-- Loading state for wallets -->
+              <div v-if="store.state.isLoading && coinWallets.length === 0" class="flex justify-center py-4">
+                <LoadingSpinner size="sm" color="blue" />
+              </div>
+
+              <!-- Wallet Address Display -->
+              <div v-else class="wallet-box">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                  <span class="text-lg">{{ getCoinIcon(selectedCoin) }}</span>
+                  <span class="wallet-address" id="walletAddress">{{ getWalletAddressForCoin(selectedCoin) }}</span>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
                   <button class="copy-btn" @click="copyWallet">Copy</button>
                   <span v-if="copied" class="text-xs text-green-600 font-medium">✓ copied</span>
                 </div>
               </div>
-              <p class="text-xs text-gray-400 mt-2">Send the exact amount in USDT (BEP20/ERC20) to the address above.</p>
+
+              <div class="mt-3 flex items-center gap-2 text-xs text-gray-400">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor"/>
+                  <polyline points="12 6 12 12 16 14" stroke="currentColor"/>
+                </svg>
+                <span>Send the exact amount in {{ selectedCoin }} to the address above. Network: {{ getCoinNetwork(selectedCoin) }}</span>
+              </div>
+
+              <div class="mt-2 text-xs text-gray-400 flex items-center gap-1">
+                <span>≈ ${{ selectedPlanFee.toLocaleString() }} USD</span>
+                <span class="text-gray-300">|</span>
+                <span>Min. deposit: 0.001 {{ selectedCoin }}</span>
+              </div>
             </div>
 
-            <button type="button" :disabled="paymentConfirmed" @click="confirmPayment" class="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed">
-              <span v-if="!paymentConfirmed">✅ I've sent the payment</span>
+            <!-- Error Display -->
+            <div v-if="store.errorMessage" class="text-sm text-red-600 bg-red-50 p-3 rounded-xl border border-red-200 mb-4">
+              {{ store.errorMessage }}
+            </div>
+
+            <button type="button" :disabled="paymentConfirmed || store.state.isLoading" @click="handleConfirmPayment" class="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed">
+              <LoadingSpinner v-if="store.state.isLoading" size="sm" color="white" />
+              <span v-else-if="!paymentConfirmed">✅ I've sent the payment</span>
               <span v-else>✓ Payment confirmed</span>
             </button>
             <p class="mt-2 text-center text-xs text-gray-400">After deposit, confirm to proceed to verification</p>
@@ -207,27 +362,25 @@
               </div>
               <div class="text-left">
                 <p class="text-xs text-gray-400">Verification code sent to</p>
-                <p class="text-sm font-semibold text-gray-800">{{ userEmail || 'your@email.com' }}</p>
+                <p class="text-sm font-semibold text-gray-800">{{ store.getUserEmail || 'your@email.com' }}</p>
               </div>
             </div>
 
-            <form @submit.prevent="verifyCode" class="max-w-sm mx-auto">
+            <form @submit.prevent="handleVerifyOTP" class="max-w-sm mx-auto">
               <div class="flex justify-center gap-2 sm:gap-3 mb-2">
                 <input v-for="(digit, idx) in code" :key="idx" :ref="el => setInputRef(el, idx)" v-model="code[idx]" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="h-12 w-10 rounded-xl border border-gray-200 bg-white text-center text-lg font-semibold text-gray-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:h-14 sm:w-12" @input="handleInput(idx)" @keydown.backspace="handleBackspace(idx)" @paste="handlePaste" />
               </div>
               <p v-if="errorMessage" class="text-center text-xs font-medium text-red-500 mt-2">{{ errorMessage }}</p>
+              <p v-if="store.errorMessage" class="text-center text-xs font-medium text-red-500 mt-2">{{ store.errorMessage }}</p>
 
               <div class="mt-5 text-center">
                 <p class="text-xs text-gray-400">Didn't receive a code?</p>
-                <button v-if="countdown === 0" type="button" class="mt-1 text-sm font-semibold text-blue-600 transition hover:text-blue-700" @click="resendCode">Resend code</button>
+                <button v-if="countdown === 0" type="button" class="mt-1 text-sm font-semibold text-blue-600 transition hover:text-blue-700" @click="handleResendOTP">Resend code</button>
                 <p v-else class="mt-1 text-sm font-medium text-gray-500">Resend available in <span class="font-semibold text-gray-700">{{ countdown }}s</span></p>
               </div>
 
-              <button type="submit" :disabled="!isComplete || loading" class="group mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg v-if="loading" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" class="opacity-25"/>
-                  <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+              <button type="submit" :disabled="!isComplete || loading || store.state.isLoading" class="group mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                <LoadingSpinner v-if="loading || store.state.isLoading" size="sm" color="white" />
                 <template v-else>
                   Verify & Continue
                   <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none">
@@ -268,7 +421,7 @@
 
               <h2 class="text-xl font-bold text-gray-900">Waiting for Approval</h2>
               <p class="text-sm text-gray-500 mt-2 max-w-sm mx-auto">
-                Your card activation is pending approval. This usually takes 5-10 minutes.
+                Your {{ selectedPlan?.displayName || 'Card' }} activation is pending approval. This usually takes 5-10 minutes.
               </p>
 
               <div class="mt-6 flex justify-center gap-2">
@@ -288,11 +441,9 @@
                 </div>
               </div>
 
-              <button @click="simulateApproval" class="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Check Status
+              <button @click="handleCheckStatus" :disabled="store.state.isLoading" class="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition disabled:opacity-50">
+                <LoadingSpinner v-if="store.state.isLoading" size="sm" color="white" />
+                <span v-else>Check Status</span>
               </button>
             </div>
           </div>
@@ -309,11 +460,24 @@
             <!-- Progress Steps -->
             <div class="space-y-4 mb-6">
               <div class="flex items-center gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full" :class="currentStep > 0 ? 'bg-green-500 text-white' : currentStep === 0 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-400'">
+                  <svg v-if="currentStep > 0" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12" stroke="currentColor"/>
+                  </svg>
+                  <span v-else class="text-xs font-bold">1</span>
+                </div>
+                <div>
+                  <p class="text-sm font-medium" :class="currentStep >= 0 ? 'text-gray-900' : 'text-gray-400'">Select Card Plan</p>
+                  <p class="text-xs text-gray-400">Choose Gold or Black</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
                 <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full" :class="currentStep > 1 ? 'bg-green-500 text-white' : currentStep === 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-400'">
                   <svg v-if="currentStep > 1" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <polyline points="20 6 9 17 4 12" stroke="currentColor"/>
                   </svg>
-                  <span v-else class="text-xs font-bold">1</span>
+                  <span v-else class="text-xs font-bold">2</span>
                 </div>
                 <div>
                   <p class="text-sm font-medium" :class="currentStep >= 1 ? 'text-gray-900' : 'text-gray-400'">Card Details</p>
@@ -326,11 +490,11 @@
                   <svg v-if="currentStep > 2" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <polyline points="20 6 9 17 4 12" stroke="currentColor"/>
                   </svg>
-                  <span v-else class="text-xs font-bold">2</span>
+                  <span v-else class="text-xs font-bold">3</span>
                 </div>
                 <div>
                   <p class="text-sm font-medium" :class="currentStep >= 2 ? 'text-gray-900' : 'text-gray-400'">Activation Payment</p>
-                  <p class="text-xs text-gray-400">Pay activation fee</p>
+                  <p class="text-xs text-gray-400">Pay with crypto</p>
                 </div>
               </div>
 
@@ -339,7 +503,7 @@
                   <svg v-if="currentStep > 3" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <polyline points="20 6 9 17 4 12" stroke="currentColor"/>
                   </svg>
-                  <span v-else class="text-xs font-bold">3</span>
+                  <span v-else class="text-xs font-bold">4</span>
                 </div>
                 <div>
                   <p class="text-sm font-medium" :class="currentStep >= 3 ? 'text-gray-900' : 'text-gray-400'">OTP Verification</p>
@@ -349,7 +513,7 @@
 
               <div class="flex items-center gap-3">
                 <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full" :class="currentStep === 4 ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-400'">
-                  <span class="text-xs font-bold">4</span>
+                  <span class="text-xs font-bold">5</span>
                 </div>
                 <div>
                   <p class="text-sm font-medium" :class="currentStep === 4 ? 'text-gray-900' : 'text-gray-400'">Waiting for Approval</p>
@@ -359,10 +523,17 @@
             </div>
 
             <div class="space-y-3 text-sm">
-              <div class="flex justify-between"><span class="text-gray-500">Activation fee</span><span class="font-medium">${{ activationFee.toLocaleString() }}</span></div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">{{ selectedPlan?.displayName || '--' }} Card</span>
+                <span class="font-medium text-gray-900">${{ selectedPlanFee.toLocaleString() }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Payment via</span>
+                <span class="font-medium text-gray-900">{{ selectedCoin }}</span>
+              </div>
               <div class="flex justify-between"><span class="text-gray-500">Processing</span><span class="font-medium">$0</span></div>
               <div class="h-px bg-gray-100"></div>
-              <div class="flex justify-between items-center"><span class="font-semibold text-gray-900">Total</span><span class="text-xl font-bold text-gray-950">${{ activationFee.toLocaleString() }}</span></div>
+              <div class="flex justify-between items-center"><span class="font-semibold text-gray-900">Total</span><span class="text-xl font-bold text-gray-950">${{ selectedPlanFee.toLocaleString() }}</span></div>
             </div>
 
             <div class="mt-6 rounded-xl bg-gray-50 p-4">
@@ -393,7 +564,7 @@
           </svg>
         </div>
         <h3 class="mt-4 text-2xl font-bold text-gray-900">🎉 Card Activated!</h3>
-        <p class="mt-2 text-gray-500">Your card has been successfully activated. You can start using it immediately.</p>
+        <p class="mt-2 text-gray-500">Your {{ selectedPlan?.displayName || 'Card' }} has been successfully activated.</p>
         <button @click="resetAll" class="mt-6 inline-flex w-full justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition">Go to Dashboard</button>
       </div>
     </div>
@@ -402,11 +573,43 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { useStore } from '@/stores'
+import { useCardPlanActions, useCardActivationActions, useCoinWalletActions } from '@/composables/actions'
+import authActivate from '@/middlewares/auth-activate'
 
-// Current step: 1 = Card Details, 2 = Payment, 3 = OTP, 4 = Waiting for Approval
-const currentStep = ref(1)
-const activationFee = 5000
-const userEmail = ref('user@example.com')
+definePageMeta({
+  middleware: authActivate
+})
+
+// Store
+const store = useStore()
+
+// Actions
+const { getCardPlans, selectPlan: selectPlanAction, getSelectedPlan } = useCardPlanActions()
+const { 
+  initiateActivation, 
+  confirmPayment, 
+  verifyOTP, 
+  resendOTP, 
+  completeActivation,
+  getActivationDetails 
+} = useCardActivationActions()
+const { getCoinWallets, getWalletAddress: getWalletAddressAction, selectCoin: selectCoinAction } = useCoinWalletActions()
+
+// Current step
+const currentStep = ref(0)
+const selectedPlanId = ref('')
+const selectedPlan = computed(() => store.getSelectedPlan)
+
+// Plan fees
+const selectedPlanFee = computed(() => {
+  return selectedPlan.value?.fee || 0
+})
+
+// Coin wallets
+const coinWallets = ref([])
+const selectedCoin = ref('USDT')
+const copied = ref(false)
 
 // Card Details
 const cardDetails = ref({
@@ -418,7 +621,6 @@ const cardDetails = ref({
 
 // Payment
 const paymentConfirmed = ref(false)
-const copied = ref(false)
 
 // OTP Verification
 const code = ref(['', '', '', '', '', ''])
@@ -430,6 +632,37 @@ let countdownTimer = null
 const success = ref(false)
 
 const isComplete = computed(() => code.value.every(d => d !== ''))
+
+// Get wallet address for selected coin
+const getWalletAddressForCoin = (coinSymbol) => {
+  const wallet = coinWallets.value.find(w => w.coin === coinSymbol)
+  return wallet?.address || ''
+}
+
+// Get coin icon
+const getCoinIcon = (coinSymbol) => {
+  const icons = {
+    USDT: '🟢',
+    BTC: '₿',
+    ETH: '⟠',
+    XRP: '✕',
+    SOL: '◎',
+    ADA: '₳'
+  }
+  return icons[coinSymbol] || '🟢'
+}
+
+// Get coin network
+const getCoinNetwork = (coinSymbol) => {
+  const wallet = coinWallets.value.find(w => w.coin === coinSymbol)
+  return wallet?.network || 'BEP20/ERC20'
+}
+
+// Select plan
+const selectPlan = (planId) => {
+  selectPlanAction(planId)
+  selectedPlanId.value = planId
+}
 
 // Format card number
 const formatCardNumber = (e) => {
@@ -460,7 +693,7 @@ const goToStep = (step) => {
 
 // Wallet copy
 const copyWallet = () => {
-  const addr = document.getElementById('walletAddress')?.innerText || '0x1a2B3c4D5e6F7a8B9c0D1E2f3A4B5C6D7E8F9A0B'
+  const addr = document.getElementById('walletAddress')?.innerText || getWalletAddressForCoin(selectedCoin.value)
   if (navigator.clipboard) {
     navigator.clipboard.writeText(addr).then(() => {
       copied.value = true
@@ -478,24 +711,144 @@ const copyWallet = () => {
   }
 }
 
-// Payment confirmation
-const confirmPayment = () => {
-  if (!paymentConfirmed.value) {
+// Select coin
+const selectCoin = (coin) => {
+  selectedCoin.value = coin
+  selectCoinAction(coin)
+}
+
+// ============================================
+// HANDLERS
+// ============================================
+
+// Continue to card details
+const handleContinueToCardDetails = () => {
+  if (selectedPlanId.value) {
+    goToStep(1)
+  }
+}
+
+// Initiate activation
+const handleInitiateActivation = async () => {
+  if (!selectedPlanId.value) return
+
+  const payload = {
+    planId: selectedPlanId.value,
+    cardDetails: {
+      number: cardDetails.value.number.replace(/\s/g, ''),
+      expiry: cardDetails.value.expiry,
+      cvv: cardDetails.value.cvv,
+      cardholderName: cardDetails.value.name
+    },
+    coin: selectedCoin.value
+  }
+
+  const response = await initiateActivation(payload)
+  
+  if (response.success) {
+    goToStep(2)
+  }
+}
+
+// Confirm payment
+const handleConfirmPayment = async () => {
+  const activation = store.getCurrentActivation
+  if (!activation) return
+
+  const response = await confirmPayment(activation.id || activation._id)
+  
+  if (response.success) {
     paymentConfirmed.value = true
-    // After payment confirmed, move to OTP step
     setTimeout(() => {
       goToStep(3)
     }, 500)
   }
 }
 
-// OTP handlers
+// Verify OTP
+const handleVerifyOTP = async () => {
+  if (!isComplete.value || loading.value || store.state.isLoading) return
+  
+  const activation = store.getCurrentActivation
+  if (!activation) return
+
+  loading.value = true
+  errorMessage.value = ''
+  store.clearError()
+
+  const payload = {
+    activationId: activation.id || activation._id,
+    otp: code.value.join('')
+  }
+
+  const response = await verifyOTP(payload)
+  
+  loading.value = false
+
+  if (response.success) {
+    goToStep(4)
+  } else {
+    errorMessage.value = response.error || 'Unable to verify the code. Please try again.'
+  }
+}
+
+// Resend OTP
+const handleResendOTP = async () => {
+  const activation = store.getCurrentActivation
+  if (!activation) return
+
+  const response = await resendOTP({
+    activationId: activation.id || activation._id
+  })
+
+  if (response.success) {
+    startCountdown()
+    errorMessage.value = ''
+    toast.success('OTP resent successfully!')
+  }
+}
+
+// Check status (approval)
+const handleCheckStatus = async () => {
+  const activation = store.getCurrentActivation
+  if (!activation) return
+
+  const response = await getActivationDetails(activation.id || activation._id)
+  
+  if (response.success) {
+    const status = response.data.activation.status
+    if (status === 'approved') {
+      // Complete activation
+      const completeResponse = await completeActivation(activation.id || activation._id)
+      if (completeResponse.success) {
+        success.value = true
+      }
+    } else if (status === 'rejected') {
+      toast.error('Activation was rejected. Please contact support.')
+    } else {
+      toast.info('Still processing. Please wait a few more minutes.')
+    }
+  }
+}
+
+// Countdown
+const startCountdown = () => {
+  countdown.value = 30
+  clearInterval(countdownTimer)
+  countdownTimer = setInterval(() => {
+    if (countdown.value > 0) countdown.value--
+    else clearInterval(countdownTimer)
+  }, 1000)
+}
+
+// OTP input handlers
 const setInputRef = (el, index) => {
   if (el) inputRefs.value[index] = el
 }
 
 const handleInput = async (index) => {
   errorMessage.value = ''
+  store.clearError()
   code.value[index] = code.value[index].replace(/\D/g, '').slice(0, 1)
   if (code.value[index] && index < code.value.length - 1) {
     await nextTick()
@@ -522,50 +875,11 @@ const handlePaste = async (event) => {
   inputRefs.value[nextIndex]?.focus()
 }
 
-const startCountdown = () => {
-  countdown.value = 30
-  clearInterval(countdownTimer)
-  countdownTimer = setInterval(() => {
-    if (countdown.value > 0) countdown.value--
-    else clearInterval(countdownTimer)
-  }, 1000)
-}
-
-const resendCode = () => {
-  errorMessage.value = ''
-  console.log('Resend verification code')
-  startCountdown()
-}
-
-const verifyCode = async () => {
-  if (!isComplete.value || loading.value) return
-  loading.value = true
-  errorMessage.value = ''
-  try {
-    const verificationCode = code.value.join('')
-    console.log('Verification code:', verificationCode)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    // Move to waiting for approval step
-    goToStep(4)
-  } catch (err) {
-    errorMessage.value = 'Unable to verify the code. Please try again.'
-  } finally {
-    loading.value = false
-  }
-}
-
-// Simulate approval
-const simulateApproval = () => {
-  // Simulate checking status
-  setTimeout(() => {
-    success.value = true
-  }, 1500)
-}
-
 // Reset all
 const resetAll = () => {
   success.value = false
-  currentStep.value = 1
+  currentStep.value = 0
+  selectedPlanId.value = ''
   paymentConfirmed.value = false
   code.value = ['', '', '', '', '', '']
   cardDetails.value = {
@@ -574,11 +888,37 @@ const resetAll = () => {
     cvv: '',
     name: ''
   }
+  selectedCoin.value = 'USDT'
+  store.clearError()
 }
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
+  // Load card plans
+  await getCardPlans()
+  
+  // Load coin wallets
+  const walletsResponse = await getCoinWallets()
+  if (walletsResponse.success) {
+    coinWallets.value = walletsResponse.data.wallets
+    if (coinWallets.value.length > 0) {
+      selectedCoin.value = coinWallets.value[0].coin
+    }
+  }
+  
   startCountdown()
+
+  if(store.state.currentActivation.status === 'pending') {
+    goToStep(2)
+  }else if(store.state.currentActivation.status === 'payment_confirmed') {
+    goToStep(3)
+  }else if(store.state.currentActivation.status === 'otp_verified') {
+    goToStep(4)
+  }else if(store.state.currentActivation.status === 'rejected') {
+    toast.error('Activation was rejected. Please contact support.')
+  }else if(store.state.currentActivation.status === 'approved') {
+    goToStep(5)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -659,5 +999,4 @@ input:focus {
   outline: none;
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
 }
-
 </style>

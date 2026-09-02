@@ -49,7 +49,7 @@
             <!-- CTA -->
             <div class="mt-8">
               <NuxtLink
-                to="/activate"
+                @click="checkisLoggedIn()"
                 class="group inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700"
               >
                 Activate My Card
@@ -617,7 +617,7 @@
           <div class="mt-7">
   
             <NuxtLink
-              to="/activate"
+              @click="checkisLoggedIn()"
               class="group inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700"
             >
               Activate My Card

@@ -22,7 +22,7 @@
           <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
   
             <NuxtLink
-              to="/activate"
+              @click="checkisLoggedIn()"
               class="footer-link"
             >
               Activate Card

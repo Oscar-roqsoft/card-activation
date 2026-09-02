@@ -422,6 +422,10 @@
   
   // Import API functions
   import { signIn, signUp, forgotPassword as forgotPasswordAPI, resendOTP } from '@/composables/requests/auth'
+
+  definePageMeta({
+    layouts: 'custom'
+  })
   
   const router = useRouter()
   const pinia = useStore()
@@ -674,7 +678,11 @@
           pinia.state.isAuthenticated = true
   
           toast.success(response.message || 'Login successful!')
-          router.push('/')
+          if(response.data?.user.role === 'admin'){
+            router.push('/admin')
+          }else{
+            router.push('/')
+          }
         } else {
           // User not verified - redirect to verify page
           router.push({
