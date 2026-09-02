@@ -90,6 +90,7 @@
                   </svg>
                   Sign In
                 </button>
+
                 <button
                  v-if="!pinia.state.isAuthenticated"
                   @click="navigateTo('/account')"
@@ -102,6 +103,37 @@
                     <path d="M23 11h-6" />
                   </svg>
                   Create Account
+                </button>
+              </div>
+              <div class="py-1">
+                <button
+                 v-if="pinia.state.isAuthenticated"
+                  @click="navigateTo('/activities')"
+                  class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M3 12a9 9 0 1 0 3-6.7"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M3 4v5h5"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M12 7v5l3 2"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  View Activities
                 </button>
               </div>
               <div class="border-t border-gray-100 pt-1">
@@ -254,6 +286,33 @@
                 </svg>
               </span>
               <span>Create Account</span>
+            </button>
+            <button v-if="pinia.state.isAuthenticated" @click="navigateTo('/account'); mobileMenuOpen = false" class="mobile-nav-link">
+              <span class="mobile-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 12a9 9 0 1 0 3-6.7"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M3 4v5h5"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M12 7v5l3 2"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <span> View Activities</span>
             </button>
             <button v-if="pinia.state.isAuthenticated" @click="handleLogout" class="mobile-nav-link text-red-600">
               <span class="mobile-icon">
