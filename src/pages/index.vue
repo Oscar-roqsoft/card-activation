@@ -2,7 +2,8 @@
     <HeroSection/>
 
     <TrustSection/>
-    <HowItWorks/>
+
+    <HowItWorks />
 
     <BenefitsSection/>
 

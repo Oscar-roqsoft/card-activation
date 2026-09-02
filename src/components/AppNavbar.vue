@@ -315,14 +315,14 @@
       <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="closeModal"></div>
 
       <!-- Modal Content -->
-      <div class="relative w-full max-w-md">
+      <!-- <div class="relative w-full max-w-md">
         <LoginSignup
           :initial-mode="modalMode"
           @close="closeModal"
           @login-success="handleLoginSuccess"
           @signup-success="handleSignupSuccess"
         />
-      </div>
+      </div> -->
     </div>
   </Teleport>
 </template>

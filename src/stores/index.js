@@ -126,7 +126,7 @@ export const useStore = defineStore('card', () => {
     state.allUsers = null
     state.token = null
     state.isAuthenticated = false
-    state.currentActivation = null
+    // state.currentActivation = null
     state.activations = []
     
     if (process.client) {

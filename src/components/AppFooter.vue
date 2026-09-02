@@ -36,14 +36,14 @@
             </NuxtLink>
   
             <NuxtLink
-              to="/privacy"
+              to="/"
               class="footer-link"
             >
               Privacy
             </NuxtLink>
   
             <NuxtLink
-              to="/terms"
+              to="/"
               class="footer-link"
             >
               Terms

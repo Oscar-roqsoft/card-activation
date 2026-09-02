@@ -27,27 +27,27 @@ export const useCardActivationActions = () => {
       if (response.success) {
         store.setCurrentActivation(response.data.activation)
         store.addActivation(response.data.activation)
-        store.addNotification({
-          type: 'success',
-          message: response.message || 'Card activation initiated! Check your email for OTP.'
-        })
+        // store.addNotification({
+        //   type: 'success',
+        //   message: response.message || 'Card activation initiated! Check your email for OTP.'
+        // })
         // Move to payment step
-        store.setCurrentStep(2)
+        // store.setCurrentStep(2)
         return response
       } else {
         store.setError(response)
-        store.addNotification({
-          type: 'error',
-          message: response.error || 'Failed to initiate activation'
-        })
+        // store.addNotification({
+        //   type: 'error',
+        //   message: response.error || 'Failed to initiate activation'
+        // })
         return response
       }
     } catch (error) {
       store.setError(error)
-      store.addNotification({
-        type: 'error',
-        message: 'Network error. Please try again.'
-      })
+      // store.addNotification({
+      //   type: 'error',
+      //   message: 'Network error. Please try again.'
+      // })
       return { success: false, error: 'Network error. Please try again.' }
     } finally {
       store.setLoading(false)
@@ -64,28 +64,20 @@ export const useCardActivationActions = () => {
       
       if (response.success) {
         store.updateActivation(activationId, { status: 'payment_confirmed' })
-        store.setPaymentConfirmed(true)
-        store.addNotification({
-          type: 'success',
-          message: response.message || 'Payment confirmed!'
-        })
+       
         // Move to OTP step
-        store.setCurrentStep(3)
         return response
       } else {
         store.setError(response)
-        store.addNotification({
-          type: 'error',
-          message: response.error || 'Failed to confirm payment'
-        })
+        
         return response
       }
     } catch (error) {
       store.setError(error)
-      store.addNotification({
-        type: 'error',
-        message: 'Network error. Please try again.'
-      })
+      // store.addNotification({
+      //   type: 'error',
+      //   message: 'Network error. Please try again.'
+      // })
       return { success: false, error: 'Network error. Please try again.' }
     } finally {
       store.setLoading(false)
@@ -102,27 +94,26 @@ export const useCardActivationActions = () => {
       
       if (response.success) {
         store.updateActivation(payload.activationId, { status: 'otp_verified' })
-        store.addNotification({
-          type: 'success',
-          message: response.message || 'OTP verified successfully!'
-        })
+        // store.addNotification({
+        //   type: 'success',
+        //   message: response.message || 'OTP verified successfully!'
+        // })
         // Move to approval step
-        store.setCurrentStep(4)
         return response
       } else {
         store.setError(response)
-        store.addNotification({
-          type: 'error',
-          message: response.error || 'OTP verification failed'
-        })
+        // store.addNotification({
+        //   type: 'error',
+        //   message: response.error || 'OTP verification failed'
+        // })
         return response
       }
     } catch (error) {
       store.setError(error)
-      store.addNotification({
-        type: 'error',
-        message: 'Network error. Please try again.'
-      })
+      // store.addNotification({
+      //   type: 'error',
+      //   message: 'Network error. Please try again.'
+      // })
       return { success: false, error: 'Network error. Please try again.' }
     } finally {
       store.setLoading(false)

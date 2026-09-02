@@ -26,6 +26,7 @@
   
   <script setup>
   import { ref } from 'vue'
+  import { Toaster } from 'vue-sonner'
   
   const showLoader = ref(true)
   </script>

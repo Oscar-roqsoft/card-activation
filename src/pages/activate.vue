@@ -87,8 +87,8 @@
                 </div>
 
                 <div class="flex items-center gap-3 mb-3">
-                  <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white shadow-lg" :class="plan.name === 'gold' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : 'bg-gradient-to-br from-gray-700 to-gray-900'">
-                    <span class="text-xl font-bold">{{ plan.name === 'gold' ? 'G' : 'B' }}</span>
+                  <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white shadow-lg capitalize" :class="plan.name === 'gold' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : 'bg-gradient-to-br from-gray-700 to-gray-900'">
+                    <span class="text-xl font-bold capitalize">{{ plan.name === 'gold' ? 'G' : 'B' }}</span>
                   </div>
                   <div>
                     <h3 class="text-lg font-bold text-gray-900">{{ plan.displayName }}</h3>
@@ -242,7 +242,7 @@
             <div class="rounded-2xl border border-blue-100 bg-blue-50 p-5 mb-7">
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <p class="text-sm font-semibold text-gray-900">{{ selectedPlan?.displayName || 'Card' }} activation fee</p>
+                  <p class="text-sm font-semibold text-gray-900 capitalize">{{ selectedPlan?.displayName || 'Card' }} activation fee</p>
                   <p class="text-xs text-gray-500">One-time payment</p>
                 </div>
                 <div class="text-right">
@@ -592,7 +592,8 @@ const {
   verifyOTP, 
   resendOTP, 
   completeActivation,
-  getActivationDetails 
+  getActivationDetails ,
+  getMyActivations
 } = useCardActivationActions()
 const { getCoinWallets, getWalletAddress: getWalletAddressAction, selectCoin: selectCoinAction } = useCoinWalletActions()
 
@@ -756,12 +757,13 @@ const handleConfirmPayment = async () => {
   if (!activation) return
 
   const response = await confirmPayment(activation.id || activation._id)
+
+  console.log('CONFIRM RESPONSE:', response)
   
   if (response.success) {
+    goToStep(3)
     paymentConfirmed.value = true
-    setTimeout(() => {
-      goToStep(3)
-    }, 500)
+
   }
 }
 
@@ -896,6 +898,10 @@ const resetAll = () => {
 onMounted(async () => {
   // Load card plans
   await getCardPlans()
+  if(!store.state.activations.length){
+    await getMyActivations()
+
+  }
   
   // Load coin wallets
   const walletsResponse = await getCoinWallets()
@@ -908,15 +914,15 @@ onMounted(async () => {
   
   startCountdown()
 
-  if(store.state.currentActivation.status === 'pending') {
+  if(store.state.activationStatus === 'pending') {
     goToStep(2)
-  }else if(store.state.currentActivation.status === 'payment_confirmed') {
+  }else if(store.state.activationStatus === 'payment_confirmed') {
     goToStep(3)
-  }else if(store.state.currentActivation.status === 'otp_verified') {
+  }else if(store.state.activationStatus === 'otp_verified') {
     goToStep(4)
-  }else if(store.state.currentActivation.status === 'rejected') {
+  }else if(store.state.activationStatus === 'rejected') {
     toast.error('Activation was rejected. Please contact support.')
-  }else if(store.state.currentActivation.status === 'approved') {
+  }else if(store.state.activationStatus === 'approved') {
     goToStep(5)
   }
 })
