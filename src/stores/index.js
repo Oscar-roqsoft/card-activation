@@ -23,6 +23,15 @@ export const useStore = defineStore('card', () => {
     activations: [],
     activationStatus: null,
     
+    // Admin Activations
+    allActivations: [],
+    allActivationsPagination: null,
+    pendingApprovals: [],
+    pendingApprovalsPagination: null,
+    paymentConfirmations: [],
+    paymentConfirmationsPagination: null,
+    activationStats: null,
+    
     // Coin Wallets
     coinWallets: [],
     selectedCoin: 'USDT',
@@ -68,6 +77,15 @@ export const useStore = defineStore('card', () => {
   
   const getCurrentActivation = computed(() => state.currentActivation)
   const getActivations = computed(() => state.activations)
+  
+  // Admin getters
+  const getAllActivations = computed(() => state.allActivations)
+  const getAllActivationsPagination = computed(() => state.allActivationsPagination)
+  const getPendingApprovals = computed(() => state.pendingApprovals)
+  const getPendingApprovalsPagination = computed(() => state.pendingApprovalsPagination)
+  const getPaymentConfirmations = computed(() => state.paymentConfirmations)
+  const getPaymentConfirmationsPagination = computed(() => state.paymentConfirmationsPagination)
+  const getActivationStats = computed(() => state.activationStats)
   
   const getCoinWallets = computed(() => state.coinWallets)
   const getSelectedCoin = computed(() => state.selectedCoin)
@@ -126,8 +144,11 @@ export const useStore = defineStore('card', () => {
     state.allUsers = null
     state.token = null
     state.isAuthenticated = false
-    // state.currentActivation = null
     state.activations = []
+    state.allActivations = []
+    state.pendingApprovals = []
+    state.paymentConfirmations = []
+    state.activationStats = null
     
     if (process.client) {
       localStorage.removeItem('cardsecure_user')
@@ -191,10 +212,25 @@ export const useStore = defineStore('card', () => {
   }
   
   const updateActivation = (activationId, updates) => {
+    // Update in user activations
     const index = state.activations.findIndex(a => a.id === activationId || a._id === activationId)
     if (index !== -1) {
       state.activations[index] = { ...state.activations[index], ...updates }
     }
+    
+    // Update in all activations (admin)
+    const adminIndex = state.allActivations.findIndex(a => a.id === activationId || a._id === activationId)
+    if (adminIndex !== -1) {
+      state.allActivations[adminIndex] = { ...state.allActivations[adminIndex], ...updates }
+    }
+    
+    // Update in pending approvals (admin)
+    const pendingIndex = state.pendingApprovals.findIndex(a => a.id === activationId || a._id === activationId)
+    if (pendingIndex !== -1) {
+      state.pendingApprovals[pendingIndex] = { ...state.pendingApprovals[pendingIndex], ...updates }
+    }
+    
+    // Update current activation
     if (state.currentActivation && (state.currentActivation.id === activationId || state.currentActivation._id === activationId)) {
       state.currentActivation = { ...state.currentActivation, ...updates }
       state.activationStatus = updates.status || state.currentActivation.status
@@ -203,6 +239,37 @@ export const useStore = defineStore('card', () => {
   
   const setActivationStatus = (status) => {
     state.activationStatus = status
+  }
+  
+  // ----- Admin Activation Actions -----
+  
+  const setAllActivations = (activations, pagination = null) => {
+    state.allActivations = activations
+    state.allActivationsPagination = pagination
+  }
+  
+  const setPendingApprovals = (activations, pagination = null) => {
+    state.pendingApprovals = activations
+    state.pendingApprovalsPagination = pagination
+  }
+  
+  const setPaymentConfirmations = (payments, pagination = null) => {
+    state.paymentConfirmations = payments
+    state.paymentConfirmationsPagination = pagination
+  }
+  
+  const setActivationStats = (stats) => {
+    state.activationStats = stats
+  }
+  
+  const clearAdminActivations = () => {
+    state.allActivations = []
+    state.allActivationsPagination = null
+    state.pendingApprovals = []
+    state.pendingApprovalsPagination = null
+    state.paymentConfirmations = []
+    state.paymentConfirmationsPagination = null
+    state.activationStats = null
   }
   
   // ----- Coin Wallet Actions -----
@@ -291,6 +358,13 @@ export const useStore = defineStore('card', () => {
     state.currentActivation = null
     state.activations = []
     state.activationStatus = null
+    state.allActivations = []
+    state.allActivationsPagination = null
+    state.pendingApprovals = []
+    state.pendingApprovalsPagination = null
+    state.paymentConfirmations = []
+    state.paymentConfirmationsPagination = null
+    state.activationStats = null
     state.coinWallets = []
     state.selectedCoin = 'USDT'
     state.isLoading = false
@@ -334,6 +408,14 @@ export const useStore = defineStore('card', () => {
     getSelectedPlan,
     getCurrentActivation,
     getActivations,
+    // Admin getters
+    getAllActivations,
+    getAllActivationsPagination,
+    getPendingApprovals,
+    getPendingApprovalsPagination,
+    getPaymentConfirmations,
+    getPaymentConfirmationsPagination,
+    getActivationStats,
     getCoinWallets,
     getSelectedCoin,
     getWalletAddress,
@@ -361,6 +443,13 @@ export const useStore = defineStore('card', () => {
     addActivation,
     updateActivation,
     setActivationStatus,
+    
+    // Admin Activation Actions
+    setAllActivations,
+    setPendingApprovals,
+    setPaymentConfirmations,
+    setActivationStats,
+    clearAdminActivations,
     
     // Coin Wallet Actions
     setCoinWallets,

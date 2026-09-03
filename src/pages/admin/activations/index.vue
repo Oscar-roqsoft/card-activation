@@ -16,6 +16,17 @@
               <h1 class="text-2xl font-bold tracking-tight text-gray-950 sm:text-3xl mt-4">Card Activations</h1>
               <p class="mt-1 text-sm text-gray-500">Review, approve, and manage all card activation requests.</p>
             </div>
+            <div class="flex gap-2">
+              <button
+                @click="loadActivations"
+                class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+              >
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9" stroke="currentColor"/>
+                </svg>
+                Refresh
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -23,7 +34,7 @@
       <!-- Main Content -->
       <main class="mx-auto max-w-7xl px-5 py-8 sm:px-6 sm:py-12 lg:px-8">
         <!-- Loading Overlay -->
-        <div v-if="store.isLoading" class="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
+        <div v-if="store.state.isLoading" class="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
           <LoadingSpinner size="lg" color="blue" label="Loading..." />
         </div>
   
@@ -33,7 +44,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm text-gray-500">Total Activations</p>
-                <p class="text-2xl font-bold text-gray-900">{{ activations.length }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ store.getAllActivations?.length || 0 }}</p>
               </div>
               <div class="rounded-xl bg-blue-50 p-3 text-blue-600">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -113,9 +124,6 @@
               placeholder="Search by user or plan..."
               class="rounded-xl border border-gray-200 px-4 py-2 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition outline-none w-64"
             />
-            <button @click="loadActivations" class="rounded-xl bg-blue-50 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100 transition">
-              Refresh
-            </button>
           </div>
         </div>
   
@@ -139,12 +147,12 @@
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-2">
                       <div class="h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                           :style="{ background: getAvatarColor(activation.userId?.name || activation.userId?.email) }">
-                        {{ getUserInitials(activation.userId?.name || activation.userId?.email) }}
+                           :style="{ background: getAvatarColor(activation.user?.name || activation.user?.email) }">
+                        {{ getUserInitials(activation.user?.name || activation.user?.email) }}
                       </div>
                       <div>
-                        <p class="font-medium text-gray-900">{{ activation.userId?.name || 'Unknown User' }}</p>
-                        <p class="text-xs text-gray-500">{{ activation.userId?.email || 'No email' }}</p>
+                        <p class="font-medium text-gray-900">{{ activation.user?.name || 'Unknown User' }}</p>
+                        <p class="text-xs text-gray-500">{{ activation.user?.email || 'No email' }}</p>
                       </div>
                     </div>
                   </td>
@@ -221,6 +229,31 @@
             </table>
           </div>
         </div>
+  
+        <!-- Pagination -->
+        <div v-if="store.getAllActivationsPagination" class="mt-4 flex items-center justify-between">
+          <p class="text-sm text-gray-500">
+            Showing {{ (store.getAllActivationsPagination.page - 1) * store.getAllActivationsPagination.limit + 1 }} 
+            to {{ Math.min(store.getAllActivationsPagination.page * store.getAllActivationsPagination.limit, store.getAllActivationsPagination.total) }} 
+            of {{ store.getAllActivationsPagination.total }} results
+          </p>
+          <div class="flex gap-2">
+            <button
+              @click="changePage(store.getAllActivationsPagination.page - 1)"
+              :disabled="store.getAllActivationsPagination.page <= 1"
+              class="px-3 py-1 rounded-lg border border-gray-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+            >
+              Previous
+            </button>
+            <button
+              @click="changePage(store.getAllActivationsPagination.page + 1)"
+              :disabled="store.getAllActivationsPagination.page >= store.getAllActivationsPagination.pages"
+              class="px-3 py-1 rounded-lg border border-gray-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </main>
   
       <!-- Approve Modal -->
@@ -238,7 +271,7 @@
           <div class="bg-gray-50 rounded-xl p-4 mb-6">
             <div class="flex items-center justify-between mb-2">
               <span class="text-sm text-gray-500">User</span>
-              <span class="text-sm font-semibold text-gray-900">{{ approveTarget?.userId?.name || 'N/A' }}</span>
+              <span class="text-sm font-semibold text-gray-900">{{ approveTarget?.user?.name || 'N/A' }}</span>
             </div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-sm text-gray-500">Plan</span>
@@ -264,10 +297,10 @@
             </button>
             <button
               @click="handleApprove"
-              :disabled="store.isLoading"
+              :disabled="store.state.isLoading"
               class="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg shadow-green-600/20 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              <LoadingSpinner v-if="store.isLoading" size="sm" color="white" />
+              <LoadingSpinner v-if="store.state.isLoading" size="sm" color="white" />
               <span>Approve</span>
             </button>
           </div>
@@ -291,7 +324,7 @@
           <div class="bg-gray-50 rounded-xl p-4 mb-4">
             <div class="flex items-center justify-between mb-2">
               <span class="text-sm text-gray-500">User</span>
-              <span class="text-sm font-semibold text-gray-900">{{ rejectTarget?.userId?.name || 'N/A' }}</span>
+              <span class="text-sm font-semibold text-gray-900">{{ rejectTarget?.user?.name || 'N/A' }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm text-gray-500">Plan</span>
@@ -319,10 +352,10 @@
             </button>
             <button
               @click="handleReject"
-              :disabled="store.isLoading"
+              :disabled="store.state.isLoading"
               class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-lg shadow-red-600/20 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              <LoadingSpinner v-if="store.isLoading" size="sm" color="white" />
+              <LoadingSpinner v-if="store.state.isLoading" size="sm" color="white" />
               <span>Reject</span>
             </button>
           </div>
@@ -335,7 +368,7 @@
           <div class="flex items-center justify-between mb-6">
             <div>
               <h3 class="text-xl font-bold text-gray-900">Activation Details</h3>
-              <p class="text-sm text-gray-500">{{ viewTarget?.userId?.name || 'User' }}'s card activation</p>
+              <p class="text-sm text-gray-500">{{ viewTarget?.user?.name || 'User' }}'s card activation</p>
             </div>
             <button @click="closeDetailsModal" class="text-gray-400 hover:text-gray-600">
               <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -348,8 +381,8 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="bg-gray-50 rounded-xl p-4">
               <p class="text-xs text-gray-500">User</p>
-              <p class="text-sm font-semibold text-gray-900">{{ viewTarget?.userId?.name || 'N/A' }}</p>
-              <p class="text-xs text-gray-500">{{ viewTarget?.userId?.email || 'No email' }}</p>
+              <p class="text-sm font-semibold text-gray-900">{{ viewTarget?.user?.name || 'N/A' }}</p>
+              <p class="text-xs text-gray-500">{{ viewTarget?.user?.email || 'No email' }}</p>
             </div>
             <div class="bg-gray-50 rounded-xl p-4">
               <p class="text-xs text-gray-500">Plan</p>
@@ -415,21 +448,21 @@
   <script setup>
   import { ref, computed, onMounted } from 'vue'
   import { useStore } from '~/stores'
-  import { useCardActivationActions } from '@/composables/actions'
+  import { useCardActivationActions } from '~/composables/actions'
   import { toast } from 'vue-sonner'
   import authActivate from '@/middlewares/auth-activate'
-
-definePageMeta({
-  layout: 'custom',
-  middleware: authActivate
-})
+  
+  definePageMeta({
+    layout: 'custom',
+    middleware: authActivate
+  })
   
   // Store
   const store = useStore()
   
   // Actions
   const { 
-    getMyActivations, 
+    getAllActivations,
     approveActivation, 
     rejectActivation, 
     completeActivation: completeActivationAction,
@@ -437,9 +470,10 @@ definePageMeta({
   } = useCardActivationActions()
   
   // State
-  const activations = ref([])
   const searchQuery = ref('')
   const activeFilter = ref('all')
+  const currentPage = ref(1)
+  const perPage = ref(20)
   
   // Filters
   const filters = [
@@ -450,22 +484,21 @@ definePageMeta({
     { value: 'completed', label: 'Completed' }
   ]
   
-  // Stats
+  // Computed
   const pendingCount = computed(() => {
-    return activations.value.filter(a => a.status === 'otp_verified').length
+    return store.getAllActivations?.filter(a => a.status === 'otp_verified').length || 0
   })
   
   const approvedCount = computed(() => {
-    return activations.value.filter(a => a.status === 'approved' || a.status === 'completed').length
+    return store.getAllActivations?.filter(a => a.status === 'approved' || a.status === 'completed').length || 0
   })
   
   const rejectedCount = computed(() => {
-    return activations.value.filter(a => a.status === 'rejected').length
+    return store.getAllActivations?.filter(a => a.status === 'rejected').length || 0
   })
   
-  // Filtered activations
   const filteredActivations = computed(() => {
-    let result = activations.value
+    let result = store.getAllActivations || []
   
     // Filter by status
     if (activeFilter.value !== 'all') {
@@ -476,8 +509,8 @@ definePageMeta({
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase()
       result = result.filter(a => 
-        a.userId?.name?.toLowerCase().includes(query) ||
-        a.userId?.email?.toLowerCase().includes(query) ||
+        a.user?.name?.toLowerCase().includes(query) ||
+        a.user?.email?.toLowerCase().includes(query) ||
         a.plan?.displayName?.toLowerCase().includes(query)
       )
     }
@@ -486,11 +519,11 @@ definePageMeta({
   })
   
   const getFilterCount = (filter) => {
-    if (filter === 'all') return activations.value.length
+    if (filter === 'all') return store.getAllActivations?.length || 0
     if (filter === 'otp_verified') return pendingCount.value
     if (filter === 'approved') return approvedCount.value
     if (filter === 'rejected') return rejectedCount.value
-    if (filter === 'completed') return activations.value.filter(a => a.status === 'completed').length
+    if (filter === 'completed') return store.getAllActivations?.filter(a => a.status === 'completed').length || 0
     return 0
   }
   
@@ -568,11 +601,9 @@ definePageMeta({
   
   // View activation details
   const viewActivationDetails = async (activation) => {
-    // If we already have full data, use it
     if (activation.cardDetails) {
       viewTarget.value = activation
     } else {
-      // Fetch full details
       const response = await getActivationDetails(activation.id || activation._id)
       if (response.success) {
         viewTarget.value = response.data.activation
@@ -653,11 +684,30 @@ definePageMeta({
     }
   }
   
+  // Change page
+  const changePage = (page) => {
+    if (page < 1 || page > store.getAllActivationsPagination?.pages) return
+    currentPage.value = page
+    loadActivations(page)
+  }
+  
   // Load activations
-  const loadActivations = async () => {
-    const response = await getMyActivations()
+  const loadActivations = async (page = 1) => {
+    const params = {
+      page,
+      limit: perPage.value
+    }
+    
+    if (activeFilter.value !== 'all') {
+      params.status = activeFilter.value
+    }
+  
+    const response = await getAllActivations(params)
     if (response.success) {
-      activations.value = response.data.activations || []
+      store.setAllActivations(
+        response.data.activations || [],
+        response.data.pagination
+      )
     }
   }
   
@@ -668,12 +718,10 @@ definePageMeta({
   </script>
   
   <style scoped>
-  /* Smooth transitions */
   .transition {
     transition: all 0.2s ease;
   }
   
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -689,7 +737,6 @@ definePageMeta({
     background: #a8a8a8;
   }
   
-  /* Table row hover effect */
   tbody tr {
     transition: background-color 0.15s ease;
   }
