@@ -56,7 +56,7 @@
               rounded-2xl"
             >
               <img
-                src="/card-logo.png"
+                src="/logo.png"
                 alt="CardSecure"
                 class="relative z-10 w-full object-contain"
               />

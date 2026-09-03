@@ -9,7 +9,7 @@
               <div
               class="flex w-[180px]  items-center justify-center rounded-xl"
             >
-              <img src="/card-logo.png" alt="">
+              <img src="/logo.png" alt="">
             </div>
             </div>
             <h1 class="text-2xl font-bold text-gray-900">Welcome back</h1>

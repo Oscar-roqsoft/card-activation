@@ -12,9 +12,9 @@
             class="flex items-center "
           >
           <div
-          class="flex w-[150px]  items-center justify-center rounded-xl"
+          class="flex w-[100px]  items-center justify-center rounded-xl"
         >
-          <img src="/card-logo.png" alt="">
+          <img src="/logo.png" alt="">
         </div>
           </NuxtLink>
   

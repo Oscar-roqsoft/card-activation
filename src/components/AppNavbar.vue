@@ -10,9 +10,9 @@
         @click="closeMobileMenu"
       >
         <div
-          class="flex w-[150px]  items-center justify-center rounded-xl"
+          class="flex w-[80px]  items-center justify-center rounded-xl"
         >
-          <img src="/card-logo.png" alt="">
+          <img src="/logo.png" alt="">
         </div>
        
       </NuxtLink>
@@ -195,9 +195,9 @@
       <div class="flex h-10 items-center justify-between border-b border-gray-100 px-5">
         <NuxtLink to="/" class="flex items-center " @click="closeMobileMenu">
           <div
-          class="flex w-[150px]  items-center justify-center rounded-xl"
+          class="flex w-[80px]  items-center justify-center rounded-xl"
         >
-          <img src="/card-logo.png" alt="">
+          <img src="/logo.png" alt="">
         </div>
         </NuxtLink>
 
