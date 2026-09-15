@@ -144,6 +144,7 @@ export const useStore = defineStore('card', () => {
     state.user = null
     state.allUsers = null
     state.token = null
+    state.currentActivation = null
     state.isAuthenticated = false
     state.activations = []
     state.allActivations = []
