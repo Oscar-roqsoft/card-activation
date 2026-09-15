@@ -68,10 +68,10 @@
               <div
                 v-for="plan in store.getCardPlans"
                 :key="plan.id || plan._id"
-                @click="selectPlan(plan.id || plan._id)"
+                @click="selectPlan(plan?.id || plan?._id)"
                 class="relative rounded-2xl border-2 p-6 cursor-pointer transition-all duration-300 hover:shadow-lg"
                 :class="[
-                  selectedPlanId === (plan.id || plan._id)
+                  selectedPlanId === (plan?.id || plan?._id)
                     ? plan.name === 'gold' 
                       ? 'border-yellow-500 bg-yellow-50 shadow-lg shadow-yellow-500/20'
                       : 'border-gray-900 bg-gray-900/5 shadow-lg shadow-gray-900/20'
@@ -79,7 +79,7 @@
                 ]"
               >
                 <div class="absolute top-3 right-3">
-                  <div v-if="selectedPlanId === (plan.id || plan._id)" class="flex h-6 w-6 items-center justify-center rounded-full" :class="plan.name === 'gold' ? 'bg-yellow-500' : 'bg-gray-900'">
+                  <div v-if="selectedPlanId === (plan?.id || plan?._id)" class="flex h-6 w-6 items-center justify-center rounded-full" :class="plan.name === 'gold' ? 'bg-yellow-500' : 'bg-gray-900'">
                     <svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                       <polyline points="20 6 9 17 4 12" stroke="currentColor"/>
                     </svg>
@@ -88,11 +88,11 @@
 
                 <div class="flex items-center gap-3 mb-3">
                   <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white shadow-lg capitalize" :class="plan.name === 'gold' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : 'bg-gradient-to-br from-gray-700 to-gray-900'">
-                    <span class="text-xl font-bold capitalize">{{ plan.name === 'gold' ? 'G' : 'B' }}</span>
+                    <span class="text-xl font-bold capitalize">{{ plan?.name === 'gold' ? 'G' : 'B' }}</span>
                   </div>
                   <div>
-                    <h3 class="text-lg font-bold text-gray-900">{{ plan.displayName }}</h3>
-                    <p class="text-xs text-gray-500">{{ plan.name === 'gold' ? 'Premium benefits' : 'Ultimate experience' }}</p>
+                    <h3 class="text-lg font-bold text-gray-900">{{ plan?.displayName }}</h3>
+                    <p class="text-xs text-gray-500">{{ plan?.name === 'gold' ? 'Premium benefits' : 'Ultimate experience' }}</p>
                   </div>
                 </div>
 
@@ -106,7 +106,7 @@
                 </div>
 
                 <div class="mt-4 pt-4 border-t border-gray-200">
-                  <p class="text-2xl font-bold text-gray-900">${{ plan.fee.toLocaleString() }}</p>
+                  <p class="text-2xl font-bold text-gray-900">${{ plan?.fee.toLocaleString() }}</p>
                   <p class="text-xs text-gray-400">One-time activation fee</p>
                 </div>
               </div>
@@ -118,7 +118,7 @@
               class="mt-6 w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <LoadingSpinner v-if="store.state.isLoading" size="sm" color="white" />
-              <span v-else>Continue with {{ selectedPlan ? selectedPlan.displayName : '...' }} Card</span>
+              <span v-else>Continue with {{ selectedPlan ? selectedPlan?.displayName : '...' }} Card</span>
               <svg v-if="!store.state.isLoading" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -276,9 +276,9 @@
                       : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'
                   ]"
                 >
-                  <span class="text-base">{{ getCoinIcon(coin.coin) }}</span>
-                  <span>{{ coin.coin }}</span>
-                  <span class="text-xs text-gray-400">{{ coin.network }}</span>
+                  <span class="text-base">{{ getCoinIcon(coin?.coin) }}</span>
+                  <span>{{ coin?.coin }}</span>
+                  <span class="text-xs text-gray-400">{{ coin?.network }}</span>
                 </button>
               </div>
 
@@ -524,8 +524,8 @@
 
             <div class="space-y-3 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-500">{{ selectedPlan?.displayName || '--' }} Card</span>
-                <span class="font-medium text-gray-900">${{ selectedPlanFee.toLocaleString() }}</span>
+                <span class="text-gray-500 capitalize">{{ store.state.selectedPlan?.displayName || '--' }}</span>
+                <span class="font-medium text-gray-900">${{ store.state.selectedPlan?.fee }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500">Payment via</span>
@@ -533,7 +533,7 @@
               </div>
               <div class="flex justify-between"><span class="text-gray-500">Processing</span><span class="font-medium">$0</span></div>
               <div class="h-px bg-gray-100"></div>
-              <div class="flex justify-between items-center"><span class="font-semibold text-gray-900">Total</span><span class="text-xl font-bold text-gray-950">${{ selectedPlanFee.toLocaleString() }}</span></div>
+              <div class="flex justify-between items-center"><span class="font-semibold text-gray-900">Total</span><span class="text-xl font-bold text-gray-950">${{  store.state.selectedPlan?.fee.toLocaleString() }}</span></div>
             </div>
 
             <div class="mt-6 rounded-xl bg-gray-50 p-4">
@@ -564,7 +564,7 @@
           </svg>
         </div>
         <h3 class="mt-4 text-2xl font-bold text-gray-900">🎉 Card Activated!</h3>
-        <p class="mt-2 text-gray-500">Your {{ selectedPlan?.displayName || 'Card' }} has been successfully activated.</p>
+        <p class="mt-2 text-gray-500 ">Your {{  store.state.selectedPlan?.displayName || 'Card' }} has been successfully activated.</p>
         <button @click="resetAll" class="mt-6 inline-flex w-full justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition">Go to Dashboard</button>
       </div>
     </div>

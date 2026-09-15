@@ -68,6 +68,7 @@ export const useStore = defineStore('card', () => {
   const isVerified = computed(() => state.user?.isVerified || false)
   
   const getCardPlans = computed(() => state.cardPlans)
+
   const getSelectedPlan = computed(() => {
     if (state.selectedPlanId) {
       return state.cardPlans.find(p => p.id === state.selectedPlanId || p._id === state.selectedPlanId)

@@ -258,7 +258,7 @@
           const pinia = useStore()
           pinia.setUser(response.data)
           pinia.state.isAuthenticated = true
-          localStorage.setItem('tokenExpiresAt', Date.now() + (7 * 24 * 60 * 60 * 1000).toString())
+          localStorage.setItem('tokenExpiresAt', Date.now() + (15 * 60 * 1000).toString())
         }
   
         // Redirect to dashboard

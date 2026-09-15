@@ -673,7 +673,7 @@
           }
   
           // Set token expiration
-          const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
+          const expiresAt = Date.now() + (15  * 60 * 1000) 
           localStorage.setItem('tokenExpiresAt', expiresAt.toString())
           pinia.state.isAuthenticated = true
   
