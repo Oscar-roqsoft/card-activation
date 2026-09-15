@@ -896,14 +896,13 @@ const resetAll = () => {
 
 // Lifecycle
 onMounted(async () => {
-  // Load card plans
+  // 1. First load card plans
   await getCardPlans()
-  if(!store.state.activations.length){
-    await getMyActivations()
-
-  }
   
-  // Load coin wallets
+  // 2. Always fetch activations (don't rely on cache)
+   await getMyActivations()
+  
+  // 3. Load coin wallets
   const walletsResponse = await getCoinWallets()
   if (walletsResponse.success) {
     coinWallets.value = walletsResponse.data.wallets
@@ -914,16 +913,68 @@ onMounted(async () => {
   
   startCountdown()
 
-  if(store.state.activationStatus === 'pending') {
-    goToStep(2)
-  }else if(store.state.activationStatus === 'payment_confirmed') {
-    goToStep(3)
-  }else if(store.state.activationStatus === 'otp_verified') {
-    goToStep(4)
-  }else if(store.state.activationStatus === 'rejected') {
-    toast.error('Activation was rejected. Please contact support.')
-  }else if(store.state.activationStatus === 'approved') {
-    goToStep(5)
+  // 4. Find the active activation and set step accordingly
+  const activations = store.state.activations || []
+  
+  // Find active (in-progress) activation
+  const activeActivation = activations.find(a => 
+    ['pending', 'payment_confirmed', 'otp_verified'].includes(a.status)
+  )
+
+  if (activeActivation) {
+    // Set current activation in store
+    store.setCurrentActivation(activeActivation)
+    store.setActivationStatus(activeActivation.status)
+    
+    // Restore selected plan
+    if (activeActivation.plan) {
+      store.selectPlan(activeActivation.plan._id || activeActivation.plan.id)
+      selectedPlanId.value = activeActivation.plan._id || activeActivation.plan.id
+    }
+    
+    // Restore selected coin
+    if (activeActivation.payment?.coin) {
+      selectedCoin.value = activeActivation.payment.coin
+    }
+    
+    // Restore card details (if any)
+    if (activeActivation.cardDetails) {
+      cardDetails.value.name = activeActivation.cardDetails.cardholderName || ''
+      cardDetails.value.expiry = activeActivation.cardDetails.expiry || ''
+    }
+    
+    // Navigate to correct step
+    switch (activeActivation.status) {
+      case 'pending':
+        goToStep(2)  // Payment step
+        break
+      case 'payment_confirmed':
+        goToStep(3)  // OTP step
+        break
+      case 'otp_verified':
+        goToStep(4)  // Waiting for approval
+        break
+    }
+    
+    return
+  }
+
+  // 5. Check if there's a completed/approved/rejected activation
+  const lastActivation = activations[0]
+  
+  if (lastActivation) {
+    if (lastActivation.status === 'approved') {
+      // User needs to complete
+      store.setCurrentActivation(lastActivation)
+      goToStep(4)  // Still waiting for user to complete
+    } else if (lastActivation.status === 'completed') {
+      // Card already active
+      store.setCurrentActivation(lastActivation)
+      success.value = true
+    } else if (lastActivation.status === 'rejected') {
+      // Show rejection, stay on step 0
+      toast.error('Your previous activation was rejected. Please contact support.')
+    }
   }
 })
 

@@ -139,6 +139,17 @@ export const useCardActivationActions = () => {
       
       if (response.success) {
         store.setActivations(response.data.activations)
+        
+        // ✅ FIND ACTIVE ACTIVATION AND SET IT
+        const activeActivation = response.data.activations.find(a => 
+          ['pending', 'payment_confirmed', 'otp_verified'].includes(a.status)
+        )
+        
+        if (activeActivation) {
+          store.setCurrentActivation(activeActivation)
+          store.setActivationStatus(activeActivation.status)
+        }
+        
         return response
       } else {
         store.setError(response)
