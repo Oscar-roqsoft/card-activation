@@ -200,7 +200,7 @@ export const useCardActivationActions = () => {
           type: 'success',
           message: response.message || 'Card activated successfully! 🎉'
         })
-        router.push('/dashboard')
+        router.push('/')
         return response
       } else {
         store.setError(response)

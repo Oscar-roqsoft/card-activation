@@ -779,7 +779,7 @@
   // Check if already logged in
   onMounted(() => {
     if (pinia.isAuthenticated && pinia.user) {
-      router.push('/dashboard')
+      router.push('/')
     }
   })
   </script>
